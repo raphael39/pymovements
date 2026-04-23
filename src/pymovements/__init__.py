@@ -18,6 +18,7 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
 """Provides top-level access to submodules."""
+from pymovements import correction
 from pymovements import datasets
 from pymovements import events
 from pymovements import exceptions
@@ -39,6 +40,7 @@ from pymovements.dataset import ResourceDefinitions
 from pymovements.dataset.websource import WebSource
 from pymovements.events import EventDataFrame
 from pymovements.events import Events
+from pymovements.correction import correct_vertical_drift
 from pymovements.exceptions import UnknownFileType
 from pymovements.exceptions import UnknownMeasure
 from pymovements.gaze import Experiment
