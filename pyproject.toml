@@ -78,6 +78,15 @@ dev = [
   "pre-commit>=3.0.0",
   "pylint>=4.0.0"
 ]
+dist = [
+  # ML-based vertical drift correction via the DIST model
+  # (Mercier et al. 2023, arxiv:2311.06095). Heavy deps — opt in.
+  "torch>=2.0",
+  "pytorch-lightning>=2.0",
+  "timm>=0.9",
+  "transformers>=4.30",
+  "einops>=0.7"
+]
 
 [project.urls]
 Homepage = "https://github.com/pymovements/pymovements"

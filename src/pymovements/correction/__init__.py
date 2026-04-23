@@ -47,6 +47,7 @@ from pymovements.correction._stimulus_utils import line_midlines
 from pymovements.correction._stimulus_utils import word_centers
 from pymovements.correction.correct import correct_vertical_drift
 from pymovements.correction.correct import METHODS
+from pymovements.correction.dist import DistCorrector
 
 
 __all__ = [
@@ -69,6 +70,8 @@ __all__ = [
     'line_midlines',
     'word_centers',
     'line_height',
+    # ML-based corrector (requires pymovements[dist] extras)
+    'DistCorrector',
     # constants
     'CLASSICAL_METHODS',
     'METHODS',

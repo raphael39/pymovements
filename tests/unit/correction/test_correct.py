@@ -159,9 +159,20 @@ class TestValidation:
         with pytest.raises(ValueError, match='Unknown method'):
             correct_vertical_drift(_scanpath(), midlines=MIDLINES, method='bogus')
 
-    def test_dist_reserved_not_implemented(self) -> None:
-        with pytest.raises(NotImplementedError, match='DistCorrector'):
+    def test_dist_requires_corrector(self) -> None:
+        with pytest.raises(ValueError, match='dist_corrector'):
             correct_vertical_drift(_scanpath(), midlines=MIDLINES, method='dist')
+
+    def test_dist_requires_dffix_and_trial(self) -> None:
+        class _StubCorrector:
+            def predict(self, dffix, trial):  # pragma: no cover - not called
+                raise AssertionError('should not be reached')
+
+        with pytest.raises(ValueError, match='dffix'):
+            correct_vertical_drift(
+                _scanpath(), midlines=MIDLINES, method='dist',
+                dist_corrector=_StubCorrector(),
+            )
 
     def test_midlines_required_when_no_stimulus(self) -> None:
         with pytest.raises(ValueError, match='midlines'):

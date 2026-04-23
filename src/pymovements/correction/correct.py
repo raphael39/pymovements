@@ -136,18 +136,39 @@ def correct_vertical_drift(
             + ', '.join(sorted(METHODS)),
         )
 
-    if method == 'dist':
-        raise NotImplementedError(
-            "method='dist' is not yet available. "
-            'It will be added once the DistCorrector wrapper around the '
-            'Mercier et al. (2023) DIST model is in place. Use one of the '
-            'classical methods in the meantime: '
-            + ', '.join(sorted(CLASSICAL_METHODS)),
-        )
-
     # --- derive layout info from stimulus if needed ---
     if midlines is None and stimulus is not None:
         midlines = _derive_line_midlines(stimulus)
+
+    if method == 'dist':
+        dist_corrector = algo_kwargs.pop('dist_corrector', None)
+        if dist_corrector is None:
+            raise ValueError(
+                "method='dist' requires a 'dist_corrector' keyword argument "
+                'holding a DistCorrector instance. Build one via '
+                '`from pymovements.correction.dist import DistCorrector; '
+                "corrector = DistCorrector.from_checkpoint(...)`. The 'dist' "
+                'extras must be installed: `pip install pymovements[dist]`.',
+            )
+        dffix = algo_kwargs.pop('dffix', None)
+        trial = algo_kwargs.pop('trial', None)
+        if dffix is None or trial is None:
+            raise ValueError(
+                "method='dist' currently requires DIST-native inputs: pass "
+                "'dffix' (pandas DataFrame) and 'trial' (dict) keyword "
+                'arguments alongside dist_corrector. The TextStimulus-to-'
+                'trial adapter is not yet implemented; see '
+                'pymovements.correction.dist for status.',
+            )
+        line_indices = dist_corrector.predict(dffix=dffix, trial=trial)
+        # DIST returns line indices; map to midline y-values if midlines
+        # were provided or derived from the stimulus. Otherwise return the
+        # indices directly as floats.
+        if midlines is not None:
+            midlines_arr = np.asarray(list(midlines), dtype=float)
+            idx_arr = np.asarray(line_indices, dtype=int)
+            return midlines_arr[np.clip(idx_arr, 0, len(midlines_arr) - 1)]
+        return np.asarray(line_indices, dtype=float)
     if word_centers is None and stimulus is not None and method in ('warp', 'compare'):
         word_centers = _derive_word_centers(stimulus)
     if line_height is None and stimulus is not None and method == 'slice':
